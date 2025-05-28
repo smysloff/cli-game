@@ -1,30 +1,7 @@
 
 // file: tiles.c
 
-typedef enum TileType {
-  EMPTY_TILE = 0,  // '?'
-  GRASS_TILE = 1,  // ';'
-  STONE_TILE = 2,  // 'o'
-  WOOD_TILE  = 3,  // '='
-  SAND_TILE  = 4,  // '*'
-  WATER_TILE = 5,  // '~'
-  TILE_TYPE_COUNT
-} TileType;
-
-typedef char TileSymbol;
-
-typedef struct Tile {
-  size_t id;
-  TileType type;
-  bool animated;
-  float animation_progress;
-} Tile;
-
-typedef struct TileMap {
-  size_t cols;
-  size_t rows;
-  Tile* tiles;
-} TileMap;
+#include "tiles.h"
 
 static size_t tile_id_counter = 0;
 
@@ -101,7 +78,7 @@ void tilemap_free(TileMap *map) {
 
 Tile* tilemap_get_tile(const TileMap *map, size_t col, size_t row) {
   if (!map || !map->tiles || col >= map->cols || row >= map->rows) {
-   return NULL;
+    return NULL;
   }
   return &map->tiles[row * map->cols + col];
 }
@@ -111,9 +88,6 @@ void tilemap_render(const TileMap* map) {
   if (!map || !map->tiles) {
     return;
   }
-
-  // Перемещаем курсор в начальную позицию (0,0)
-  refresh_cursor();
 
   for (size_t row = 0; row < map->rows; ++row) {
     for (size_t col = 0; col < map->cols; ++col) {
@@ -128,15 +102,12 @@ void tilemap_render(const TileMap* map) {
         printf("\033[0m"); // сброс цвета
       }
     }
-    //putchar('\n');
-    // После завершения строки перемещаем курсор в начало следующей строки
+
     if (row < map->rows - 1) {
-      new_line();
+      cursor_next_line(1); // @todo ?
     }
   }
 
-  //refresh_cursor();
-  fflush(stdout);
 }
 
 // Функция обновления анимаций
